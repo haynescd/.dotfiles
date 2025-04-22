@@ -1,0 +1,110 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "features": {
+    "edit_prediction_provider": "none"
+  },
+  "telemetry": {
+    "metrics": false,
+    "diagnostics": false
+  },
+  "vim_mode": true,
+  "ui_font_size": 17,
+  "buffer_font_size": 16,
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Ayu Mirage"
+  },
+  "languages": {
+    "Python": {
+      "language_servers": ["pyright", "ruff"]
+    },
+    "Java": {
+      "prettier": {
+        "allowed": true,
+        "importOrder": []
+      },
+      "preferred_line_length": 100
+    }
+  },
+  "autosave": "on_focus_change",
+  "cursor_blink": false,
+  "scrollbar": { "show": "never" },
+  "scroll_beyond_last_line": "off",
+  "relative_line_numbers": true,
+  "lsp": {
+    "jdtls": {
+      "initialization_options": {
+        "bundles": [],
+        "settings": {
+          "java": {
+            "errors": {
+              "incompleteClasspath": {
+                "severity": "warning"
+              }
+            },
+            "import": {
+              "maven": {
+                "enabled": true
+              },
+              "exclusions": [
+                "**/node_modules/**",
+                "**/.metadata/**",
+                "**/archetype-resources/**",
+                "**/META-INF/maven/**",
+                "/**/test/**"
+              ]
+            },
+            "jdt": {
+              "ls": {
+                "lombokSupport": {
+                  "enabled": false // Set this to true to enable lombok support
+                }
+              }
+            },
+
+            "referencesCodeLens": {
+              "enabled": true
+            },
+            "signatureHelp": {
+              "enabled": true
+            },
+            "implementationsCodeLens": {
+              "enabled": true
+            },
+            "format": {
+              "enabled": true
+            },
+            "saveActions": {
+              "organizeImports": true
+            },
+            "contentProvider": {
+              "preferred": null
+            },
+            "autobuild": {
+              "enabled": true
+            },
+            "completion": {
+              "favoriteStaticMembers": [
+                "org.junit.Assert.*",
+                "org.junit.Assume.*",
+                "org.junit.jupiter.api.Assertions.*",
+                "org.junit.jupiter.api.Assumptions.*",
+                "org.junit.jupiter.api.DynamicContainer.*",
+                "org.junit.jupiter.api.DynamicTest.*"
+              ],
+              "importOrder": ["java", "javax", "com", "org", "co"]
+            }
+          }
+        }
+      }
+    }
+  }
+}
