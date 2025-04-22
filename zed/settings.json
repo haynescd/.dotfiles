@@ -14,17 +14,40 @@
     "metrics": false,
     "diagnostics": false
   },
-  "vim_mode": true,
-  "ui_font_size": 17,
-  "buffer_font_size": 16,
   "theme": {
     "mode": "system",
     "light": "One Light",
     "dark": "Ayu Mirage"
   },
+  "vim_mode": true,
+  "ui_font_size": 17,
+  "buffer_font_size": 16,
+  "autosave": "on_focus_change",
+  "cursor_blink": false,
+  "scrollbar": { "show": "never" },
+  "scroll_beyond_last_line": "off",
+  "relative_line_numbers": true,
+  "show_wrap_guides": true,
+  "wrap_guides": [80],
   "languages": {
     "Python": {
-      "language_servers": ["pyright", "ruff"]
+      "language_servers": ["pyright", "ruff"],
+      "format_on_save": "on",
+      "formatter": [
+        {
+          "language_server": {
+            "name": "ruff"
+          }
+        },
+        {
+          "code_actions": {
+            // Fix all auto-fixable lint violations
+            "source.fixAll.ruff": true,
+            // Organize imports
+            "source.organizeImports.ruff": true
+          }
+        }
+      ]
     },
     "Java": {
       "prettier": {
@@ -34,12 +57,18 @@
       "preferred_line_length": 100
     }
   },
-  "autosave": "on_focus_change",
-  "cursor_blink": false,
-  "scrollbar": { "show": "never" },
-  "scroll_beyond_last_line": "off",
-  "relative_line_numbers": true,
   "lsp": {
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          // Ruff server settings goes here
+          "lineLength": 80,
+          "lint": {
+            "extendSelect": ["I"]
+          }
+        }
+      }
+    },
     "jdtls": {
       "initialization_options": {
         "bundles": [],
