@@ -1,0 +1,2 @@
+require("haynescd")
+print("hello")
