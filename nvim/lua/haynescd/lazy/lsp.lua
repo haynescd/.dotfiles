@@ -17,36 +17,59 @@ return {
         config = function()
             local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-            require("lspconfig").lua_ls.setup { capabilities = capabilities }
-
-            require('lspconfig').ruff.setup {
+            vim.lsp.config('*', {
                 capabilities = capabilities,
+                root_markers = { '.git' },
+            })
+
+            vim.lsp.config('ruff', {
                 init_options = {
                     settings = {
-                        -- Ruff language server settings go here
+                        --Ruff language server settings go here
                         fixAll = true,
                         organizeImports = true,
                         lineLength = 80,
                         lint = {
-                            extendSelect = { "I" }
+                            enable = false,
                         },
                     }
                 }
-            }
+            })
 
-            require('lspconfig').basedpyright.setup {
-                capabilities = capabilities,
-            }
+            vim.lsp.config('basedpyright', {
+                settings = {
+                    basedpyright = {
+                        anaylsis = {
+                            inlayHints = {
+                                callArgumentNames = true
+                            }
+                        }
+                    }
+                }
+            })
+
+            vim.lsp.enable('lua_ls')
+            vim.lsp.enable('basedpyright')
+            vim.lsp.enable('ruff')
 
             --vim.lsp.set_log_level('debug')
 
             vim.diagnostic.config({ virtual_text = true })
+
+            -- Set for virtual lines
+            --vim.diagnostic.config({
+            --    virtual_lines = {
+            --        current_line = true,
+            --    },
+            --})
 
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('my.lsp', {}),
                 callback = function(args)
                     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
                     if not client then return end
+
+                    client.offset_encoding = "utf-16"
 
                     -- Auto-format ("lint") on save.
                     -- Usually not needed if server supports "textDocument/willSaveWaitUntil".
