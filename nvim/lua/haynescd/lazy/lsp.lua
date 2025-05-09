@@ -15,31 +15,23 @@ return {
             },
         },
         config = function()
-            local capabilities = require('blink.cmp').get_lsp_capabilities()
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+            capabilities.textDocument.semanticTokens.multilineTokenSupport = true
+            capabilities.textDocument.completion.completionItem.snippetSupport = true
 
             vim.lsp.config('*', {
                 capabilities = capabilities,
                 root_markers = { '.git' },
             })
 
-            vim.lsp.config('ruff', {
-                init_options = {
-                    settings = {
-                        --Ruff language server settings go here
-                        fixAll = true,
-                        organizeImports = true,
-                        lineLength = 80,
-                        lint = {
-                            enable = false,
-                        },
-                    }
-                }
-            })
-
             vim.lsp.config('basedpyright', {
                 settings = {
                     basedpyright = {
+                        disableOrganizeImports = true,
                         anaylsis = {
+                            autoImportCompletions = true,
+
                             inlayHints = {
                                 callArgumentNames = true
                             }
@@ -48,28 +40,40 @@ return {
                 }
             })
 
-            vim.lsp.enable('lua_ls')
-            vim.lsp.enable('basedpyright')
-            vim.lsp.enable('ruff')
+            vim.lsp.enable({ 'lua_ls', 'basedpyright' })
 
             --vim.lsp.set_log_level('debug')
 
             vim.diagnostic.config({ virtual_text = true })
 
-            -- Set for virtual lines
-            --vim.diagnostic.config({
-            --    virtual_lines = {
-            --        current_line = true,
-            --    },
-            --})
-
+            vim.keymap.set("n", "<leader>dt", function()
+                local config = vim.diagnostic.config() or {}
+                if config.virtual_text then
+                    vim.diagnostic.config { virtual_text = false, virtual_lines = false }
+                else
+                    vim.diagnostic.config { virtual_text = true, virtual_lines = false }
+                end
+            end, { desc = "Toggle lsp lines" })
             vim.api.nvim_create_autocmd('LspAttach', {
                 group = vim.api.nvim_create_augroup('my.lsp', {}),
                 callback = function(args)
                     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
                     if not client then return end
 
+
                     client.offset_encoding = "utf-16"
+
+                    vim.keymap.set("n", "<leader>dy", vim.diagnostic.setloclist,
+                        { desc = "Yank diagnostic list for current buffer" })
+
+                    -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
+                    if client:supports_method('textDocument/completion') then
+                        -- Optional: trigger autocompletion on EVERY keypress. May be slow!
+                        -- local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
+                        -- client.server_capabilities.completionProvider.triggerCharacters = chars
+
+                        vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
+                    end
 
                     -- Auto-format ("lint") on save.
                     -- Usually not needed if server supports "textDocument/willSaveWaitUntil".
@@ -85,20 +89,6 @@ return {
                         })
                     end
                 end,
-            })
-            vim.api.nvim_create_autocmd("LspAttach", {
-                group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
-                callback = function(args)
-                    local client = vim.lsp.get_client_by_id(args.data.client_id)
-                    if client == nil then
-                        return
-                    end
-                    if client.name == 'ruff' then
-                        -- Disable hover in favor of Pyright
-                        client.server_capabilities.hoverProvider = false
-                    end
-                end,
-                desc = 'LSP: Disable hover capability from Ruff',
             })
         end,
     }
