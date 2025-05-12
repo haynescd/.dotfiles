@@ -9,7 +9,7 @@ return {
                     library = {
                         -- See the configuration section for more details
                         -- Load luvit types when the `vim.uv` word is found
-                        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+                        { path = "${3rp}/luv/library", words = { "vim%.uv" } },
                     },
                 },
             },
@@ -18,6 +18,7 @@ return {
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
             capabilities.textDocument.semanticTokens.multilineTokenSupport = true
+
             capabilities.textDocument.completion.completionItem.snippetSupport = true
 
             vim.lsp.config('*', {
@@ -40,7 +41,7 @@ return {
                 }
             })
 
-            vim.lsp.enable({ 'lua_ls', 'basedpyright' })
+            vim.lsp.enable({ 'lua_ls', 'basedpyright', 'ts_ls' })
 
             --vim.lsp.set_log_level('debug')
 
@@ -54,8 +55,8 @@ return {
                     vim.diagnostic.config { virtual_text = true, virtual_lines = false }
                 end
             end, { desc = "Toggle lsp lines" })
+
             vim.api.nvim_create_autocmd('LspAttach', {
-                group = vim.api.nvim_create_augroup('my.lsp', {}),
                 callback = function(args)
                     local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
                     if not client then return end
@@ -63,8 +64,34 @@ return {
 
                     client.offset_encoding = "utf-16"
 
-                    vim.keymap.set("n", "<leader>dy", vim.diagnostic.setloclist,
-                        { desc = "Yank diagnostic list for current buffer" })
+                    --vim.keymap.set("n", "<leader>dy", vim.diagnostic.setloclist,
+                    --    { desc = "Yank diagnostic list for current buffer" })
+
+                    ---- Find references for the word under your cursor.
+                    --vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references,
+                    --    { buffer = 0, desc = 'LSP: [G]oto [R]eferences' })
+
+                    ---- Jump to the implementation of the word under your cursor.
+                    ----  Useful when your language has ways of declaring types without an actual implementation.
+                    --vim.keymap.set('n', 'gi', require('telescope.builtin').lsp_implementations,
+                    --    { buffer = 0, desc = 'LSP: [G]oto [I]mplementation' })
+
+                    ---- Jump to the definition of the word under your cursor.
+                    ----  This is where a variable was first declared, or where a function is defined, etc.
+                    ----  To jump back, press <C-t>.
+                    --vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions,
+                    --    { buffer = 0, desc = 'LSP: [G]oto [D]efinition' })
+
+                    ---- Fuzzy find all the symbols in your current document.
+                    ----  Symbols are things like variables, functions, types, etc.
+                    --vim.keymap.set('n', '<leader>gw', require('telescope.builtin').lsp_document_symbols,
+                    --    { buffer = 0, desc = 'LSP: Open Document Symbols' })
+
+                    ---- Jump to the type of the word under your cursor.
+                    ----  Useful when you're not sure what type a variable is and you want to see
+                    ----  the definition of its *type*, not where it was *defined*.
+                    --vim.keymap.set('n', 'gT', vim.lsp.buf.lsp_type_definitions,
+                    --    { buffer = 0, desc = 'LSP: [G]oto [T]ype Definition' })
 
                     -- Enable auto-completion. Note: Use CTRL-Y to select an item. |complete_CTRL-Y|
                     if client:supports_method('textDocument/completion') then
@@ -80,7 +107,6 @@ return {
                     if not client:supports_method('textDocument/willSaveWaitUntil')
                         and client:supports_method('textDocument/formatting') then
                         vim.api.nvim_create_autocmd('BufWritePre', {
-                            group = vim.api.nvim_create_augroup('my.lsp', { clear = false }),
                             buffer = args.buf,
                             callback = function()
                                 print(client.name)
