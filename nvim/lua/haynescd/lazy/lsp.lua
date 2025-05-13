@@ -13,17 +13,19 @@ return {
                     },
                 },
             },
+            { 'saghen/blink.cmp' },
         },
-        config = function()
+        config = function(_, opts)
             local capabilities = vim.lsp.protocol.make_client_capabilities()
+
             capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+
             capabilities.textDocument.semanticTokens.multilineTokenSupport = true
 
             capabilities.textDocument.completion.completionItem.snippetSupport = true
 
             vim.lsp.config('*', {
                 capabilities = capabilities,
-                root_markers = { '.git' },
             })
 
             vim.lsp.config('basedpyright', {
@@ -64,8 +66,8 @@ return {
 
                     client.offset_encoding = "utf-16"
 
-                    --vim.keymap.set("n", "<leader>dy", vim.diagnostic.setloclist,
-                    --    { desc = "Yank diagnostic list for current buffer" })
+                    vim.keymap.set("n", "<leader>dy", vim.diagnostic.setloclist,
+                        { desc = "Yank diagnostic list for current buffer" })
 
                     ---- Find references for the word under your cursor.
                     --vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references,
@@ -79,13 +81,13 @@ return {
                     ---- Jump to the definition of the word under your cursor.
                     ----  This is where a variable was first declared, or where a function is defined, etc.
                     ----  To jump back, press <C-t>.
-                    --vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions,
-                    --    { buffer = 0, desc = 'LSP: [G]oto [D]efinition' })
+                    vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions,
+                        { buffer = 0, desc = 'LSP: [G]oto [D]efinition' })
 
                     ---- Fuzzy find all the symbols in your current document.
                     ----  Symbols are things like variables, functions, types, etc.
-                    --vim.keymap.set('n', '<leader>gw', require('telescope.builtin').lsp_document_symbols,
-                    --    { buffer = 0, desc = 'LSP: Open Document Symbols' })
+                    vim.keymap.set('n', '<leader>gw', require('telescope.builtin').lsp_document_symbols,
+                        { buffer = 0, desc = 'LSP: Open Document Symbols' })
 
                     ---- Jump to the type of the word under your cursor.
                     ----  Useful when you're not sure what type a variable is and you want to see
@@ -99,7 +101,7 @@ return {
                         -- local chars = {}; for i = 32, 126 do table.insert(chars, string.char(i)) end
                         -- client.server_capabilities.completionProvider.triggerCharacters = chars
 
-                        vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
+                        --vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
                     end
 
                     -- Auto-format ("lint") on save.

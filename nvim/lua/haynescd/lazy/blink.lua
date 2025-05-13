@@ -13,16 +13,17 @@ return {
 
         ---@module 'blink.cmp'
         ---@type blink.cmp.Config
-        opts = function(_, opts)
-            opts.completion = {
-                list = { selection = { auto_insert = false, preselect = true }, },
+        opts = {
+            completion = {
+                list = {
+                    selection = { preselect = false, auto_insert = true }
+                },
                 documentation = { auto_show = true },
-            }
-            opts.sources = {
-                default = { 'lsp', 'path', 'snippets', 'buffer' },
-            }
-            opts.fuzzy = { implementation = "prefer_rust_with_warning" }
-        end,
+                ghost_text = { enabled = true },
+            },
+            signature = { enabled = true },
+        },
         opts_extend = { "sources.default" }
+
     }
 }
